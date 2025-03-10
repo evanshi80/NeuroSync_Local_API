@@ -1,1 +1,6 @@
 utils/model/model.pth
+utils/__pycache__/config.cpython-311.pyc
+utils/__pycache__/generate_face_shapes.cpython-311.pyc
+utils/audio/extraction/__pycache__/extract_features.cpython-311.pyc
+utils/audio/processing/__pycache__/audio_processing.cpython-311.pyc
+utils/model/__pycache__/model.cpython-311.pyc
