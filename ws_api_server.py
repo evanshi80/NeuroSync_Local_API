@@ -4,22 +4,22 @@ import threading
 import queue
 import time
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from flask import config, jsonify
 import librosa
 import numpy as np
 import torch
 import uvicorn
 import soundfile as sf
 
-from local_api.utils.generate_face_shapes import generate_facial_data_from_bytes
-from local_api.utils.model.model import load_model
+from utils.config import config
+from utils.generate_face_shapes import generate_facial_data_from_bytes
+from utils.model.model import load_model
 
 app = FastAPI()
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("Activated device:", device)
 
-model_path = 'local_api/utils/model/model.pth'
+model_path = 'utils/model/model.pth'
 blendshape_model = load_model(model_path, config, device)
 
 def warmup_librosa(original_sr=24000, target_sr=88200):
