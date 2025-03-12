@@ -20,6 +20,6 @@ def generate_facial_data_from_bytes(audio_bytes, model, device, config):
   
     final_decoded_outputs = process_audio_features(audio_features, model, device, config)
     t2 = time.time()
-    print(f"extract_audio_features - > Took {t2-t1} sec")
+    print(f"process_audio_features - > Took {t2-t1} sec")
     return final_decoded_outputs
 
