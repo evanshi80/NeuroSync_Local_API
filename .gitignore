@@ -1,7 +1,3 @@
 utils/model/model.pth
-utils/__pycache__/
-utils/__pycache__/
-utils/audio/extraction/__pycache__/
-utils/audio/processing/__pycache__/
-utils/model/__pycache__/
 __pycache__/
+**/__pycache__/
