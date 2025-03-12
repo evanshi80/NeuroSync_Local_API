@@ -1,22 +1,28 @@
-from fastapi import FastAPI, Body
+import os
+import sys
+from fastapi import APIRouter, Body
 import io
 import time
 import librosa
 import numpy as np
 import torch
-import uvicorn
 import soundfile as sf
 
+subproject_dir = os.path.dirname(os.path.abspath(__file__))
+print(subproject_dir)
+if subproject_dir not in sys.path:
+    sys.path.insert(0, subproject_dir)
+    
 from utils.config import config
 from utils.generate_face_shapes import generate_facial_data_from_bytes
 from utils.model.model import load_model
 
-app = FastAPI()
+router = APIRouter()
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("Activated device:", device)
 
-model_path = 'utils/model/model.pth'
+model_path = subproject_dir + '/utils/model/model.pth'
 blendshape_model = load_model(model_path, config, device)
 
 def warmup_librosa(original_sr=24000, target_sr=88200):
@@ -46,7 +52,7 @@ def process_data(data: bytes):
         generated_facial_data_list = generated_facial_data
     return {'blendshapes': generated_facial_data_list}
 
-@app.post("/audio_to_blendshapes")
+@router.post("/audio_to_blendshapes")
 async def audio_to_blendshapes(audio: bytes = Body(...)):
     """
     RESTful 接口：接收请求体中的音频 bytes 数据，
@@ -58,6 +64,4 @@ async def audio_to_blendshapes(audio: bytes = Body(...)):
     except Exception as e:
         return {"error": str(e)}
 
-if __name__ == '__main__':
-    warmup_librosa()
-    uvicorn.run(app, host="127.0.0.1", port=5000)
+warmup_librosa()
