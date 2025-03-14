@@ -7,9 +7,11 @@ import librosa
 import numpy as np
 import torch
 import soundfile as sf
+from pathlib import Path
+cache_dir = str(Path.home().absolute() / ".cache/")
+print(cache_dir)
 
 subproject_dir = os.path.dirname(os.path.abspath(__file__))
-print(subproject_dir)
 if subproject_dir not in sys.path:
     sys.path.insert(0, subproject_dir)
     
@@ -22,7 +24,7 @@ router = APIRouter()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("Activated device:", device)
 
-model_path = subproject_dir + '/utils/model/model.pth'
+model_path = f"{cache_dir}/neurosync/model.pth"
 blendshape_model = load_model(model_path, config, device)
 
 def warmup_librosa(original_sr=24000, target_sr=88200):

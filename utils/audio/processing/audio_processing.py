@@ -17,40 +17,26 @@ def decode_audio_chunk(audio_chunk, model, device, config):
     dtype = torch.float16 if use_half_precision else torch.float32
 
     # 1. Tensor 创建
-    t0 = time.time()
     src_tensor = torch.tensor(audio_chunk, dtype=dtype).unsqueeze(0).to(device)
-    tensor_creation_time = time.time() - t0
-    print(f"Tensor 创建耗时: {tensor_creation_time:.4f} 秒 (音频长度: {len(audio_chunk)})")
 
     with torch.no_grad():
         # 2. 编码器前向传递
-        encoder_start = time.time()
         if use_half_precision:
             with autocast(dtype=torch.float16):
                 encoder_outputs = model.encoder(src_tensor)
         else:
             encoder_outputs = model.encoder(src_tensor)
-        encoder_time = time.time() - encoder_start
-        print(f"Encoder 调用耗时: {encoder_time:.4f} 秒")
 
         # 3. 解码器前向传递
-        decoder_start = time.time()
         if use_half_precision:
             with autocast(dtype=torch.float16):
                 output_sequence = model.decoder(encoder_outputs)
         else:
             output_sequence = model.decoder(encoder_outputs)
-        decoder_time = time.time() - decoder_start
-        print(f"Decoder 调用耗时: {decoder_time:.4f} 秒")
 
         # 4. 将输出转换为 numpy 数组
-        conversion_start = time.time()
         decoded_outputs = output_sequence.squeeze(0).to("cpu", non_blocking=True).numpy()
-        conversion_time = time.time() - conversion_start
-        print(f"Tensor 转 numpy 耗时: {conversion_time:.4f} 秒")
 
-    total_time = tensor_creation_time + encoder_time + decoder_time + conversion_time
-    print(f"decode_audio_chunk 总耗时: {total_time:.4f} 秒")
     return decoded_outputs
 
 

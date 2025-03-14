@@ -24,7 +24,7 @@ def extract_audio_features(audio_input, sr=88200, from_bytes=False):
     min_frames = 9  # Minimum number of frames needed for delta calculation
 
     num_frames = (len(y) - frame_length) // hop_length + 1
-
+    print(num_frames)
     if num_frames < min_frames:
         print(f"Audio file is too short: {num_frames} frames, required: {min_frames} frames")
         return None, None
