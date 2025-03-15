@@ -3,14 +3,19 @@ import sys
 from fastapi import APIRouter, Body
 import io
 import time
+from huggingface_hub import snapshot_download
 import librosa
 import numpy as np
 import torch
 import soundfile as sf
-from pathlib import Path
-cache_dir = str(Path.home().absolute() / ".cache/")
-print(cache_dir)
 
+tts_model_repo = "AnimaVR/NEUROSYNC_Audio_To_Face_Blendshape"
+
+model_repo_path = snapshot_download(
+    repo_id=tts_model_repo,
+    local_dir_use_symlinks=False
+)
+print(f"下载完成-->{model_repo_path}")
 subproject_dir = os.path.dirname(os.path.abspath(__file__))
 if subproject_dir not in sys.path:
     sys.path.insert(0, subproject_dir)
@@ -24,7 +29,7 @@ router = APIRouter()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("Activated device:", device)
 
-model_path = f"{cache_dir}/neurosync/model.pth"
+model_path = f"{model_repo_path}/model.pth"
 blendshape_model = load_model(model_path, config, device)
 
 def warmup_librosa(original_sr=24000, target_sr=88200):
