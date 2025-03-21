@@ -4,7 +4,6 @@
 
 # audio_processing.py
 
-import time
 import numpy as np
 import torch
 from torch.cuda.amp import autocast
@@ -16,27 +15,21 @@ def decode_audio_chunk(audio_chunk, model, device, config):
     # Force float16 if half precision is desired; else float32
     dtype = torch.float16 if use_half_precision else torch.float32
 
-    # 1. Tensor 创建
+    # Convert audio chunk directly to the desired precision
     src_tensor = torch.tensor(audio_chunk, dtype=dtype).unsqueeze(0).to(device)
 
     with torch.no_grad():
-        # 2. 编码器前向传递
         if use_half_precision:
+
             with autocast(dtype=torch.float16):
                 encoder_outputs = model.encoder(src_tensor)
-        else:
-            encoder_outputs = model.encoder(src_tensor)
-
-        # 3. 解码器前向传递
-        if use_half_precision:
-            with autocast(dtype=torch.float16):
                 output_sequence = model.decoder(encoder_outputs)
         else:
+            encoder_outputs = model.encoder(src_tensor)
             output_sequence = model.decoder(encoder_outputs)
 
-        # 4. 将输出转换为 numpy 数组
-        decoded_outputs = output_sequence.squeeze(0).to("cpu", non_blocking=True).numpy()
-
+        # Convert output tensor back to numpy array
+        decoded_outputs = output_sequence.squeeze(0).cpu().numpy()
     return decoded_outputs
 
 
